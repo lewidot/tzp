@@ -23,6 +23,8 @@ pub fn main() !void {
     try posix.listen(listener, 128);
     std.log.info("⚡server listening on port: {d}", .{address.getPort()});
 
+    // Declare a buffer to read client data into.
+    var buf: [128]u8 = undefined;
     // While server is listening, handle requests.
     while (true) {
         // Allocate memory address for the clients address.
@@ -38,7 +40,20 @@ pub fn main() !void {
         // Log the connected clients address.
         std.log.info("{} connected", .{client_address});
 
-        write(socket, "Hello (and goodbye)") catch |e| {
+        // Read data from the client.
+        // `read` holds the length of bytes read.
+        const read = posix.read(socket, &buf) catch |e| {
+            std.log.err("error reading: {}", .{e});
+            continue;
+        };
+
+        // If no bytes are read from the client, continue with the loop.
+        if (read == 0) {
+            continue;
+        }
+
+        // Write the bytes read from the client back from the server.
+        write(socket, buf[0..read]) catch |e| {
             std.log.err("error writing: {}", .{e});
         };
     }
