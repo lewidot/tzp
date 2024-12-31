@@ -40,6 +40,10 @@ pub fn main() !void {
         // Log the connected clients address.
         std.log.info("{} connected", .{client_address});
 
+        // Set a timeout to stop a client blocking the thread indefinitely.
+        const timeout = posix.timeval{ .tv_sec = 2, .tv_usec = 500_000 };
+        try posix.setsockopt(socket, posix.SOL.SOCKET, posix.SO.RCVTIMEO, &std.mem.toBytes(timeout));
+
         // Read data from the client.
         // `read` holds the length of bytes read.
         const read = posix.read(socket, &buf) catch |e| {
