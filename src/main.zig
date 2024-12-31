@@ -44,6 +44,9 @@ pub fn main() !void {
         const timeout = posix.timeval{ .tv_sec = 2, .tv_usec = 500_000 };
         try posix.setsockopt(socket, posix.SOL.SOCKET, posix.SO.RCVTIMEO, &std.mem.toBytes(timeout));
 
+        // Set a timeout for writing bytes from the server.
+        try posix.setsockopt(socket, posix.SOL.SOCKET, posix.SO.SNDTIMEO, &std.mem.toBytes(timeout));
+
         // Read data from the client.
         // `read` holds the length of bytes read.
         const read = posix.read(socket, &buf) catch |e| {
