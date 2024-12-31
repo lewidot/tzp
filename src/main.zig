@@ -21,6 +21,7 @@ pub fn main() !void {
 
     // Listen on the address and receive incoming requests.
     try posix.listen(listener, 128);
+    std.debug.print("⚡server listening on port: {d}\n", .{address.getPort()});
 
     // While server is listening, handle requests.
     while (true) {
