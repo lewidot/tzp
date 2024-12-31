@@ -21,7 +21,7 @@ pub fn main() !void {
 
     // Listen on the address and receive incoming requests.
     try posix.listen(listener, 128);
-    std.debug.print("⚡server listening on port: {d}\n", .{address.getPort()});
+    std.log.info("⚡server listening on port: {d}", .{address.getPort()});
 
     // While server is listening, handle requests.
     while (true) {
@@ -30,16 +30,16 @@ pub fn main() !void {
         var client_address_len: posix.socklen_t = @sizeOf(net.Address);
 
         const socket = posix.accept(listener, &client_address.any, &client_address_len, 0) catch |e| {
-            std.debug.print("error accept: {}\n", .{e});
+            std.log.err("error accept: {}", .{e});
             continue;
         };
         defer posix.close(socket);
 
-        // Print the connected clients address.
-        std.debug.print("{} connected\n", .{client_address});
+        // Log the connected clients address.
+        std.log.info("{} connected", .{client_address});
 
         write(socket, "Hello (and goodbye)") catch |e| {
-            std.debug.print("error writing: {}\n", .{e});
+            std.log.err("error writing: {}", .{e});
         };
     }
 }
